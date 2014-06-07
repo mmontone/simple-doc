@@ -7,8 +7,10 @@
   :license "MIT"
   :depends-on (#:alexandria
                #:cl-who
-               #:docstring-parser)
+               #:docstring-parser
+	       #:trivial-shell)
   :components ((:file "package")
 	       (:file "util")
-               (:file "simple-doc")))
+               (:file "simple-doc")
+	       (:file "html-bootstrap")))
 
