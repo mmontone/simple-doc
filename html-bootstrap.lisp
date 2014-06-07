@@ -36,7 +36,7 @@
 			    :if-exists :supersede)
       (with-bs-page stream
 	(bs-navbar package stream category)
-	(:div :class "content"
+	(:div :class "container"
 	      (:div :class "page-header"
 		    (:h1 (str (pluralization (string-capitalize (symbol-name category))))))
 	      (loop for name in (names package category)
@@ -52,7 +52,7 @@
 			    :if-exists :supersede)
       (with-bs-page stream
 	(bs-navbar package stream)
-	(:div :class "content"
+	(:div :class "container"
 	      (:div :class "page-header"
 		    (:h1 (str (package-name package))))
 	      (:pre
