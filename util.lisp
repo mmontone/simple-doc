@@ -101,7 +101,7 @@
      (and from-setf (not (automatic-p from-setf)) (format nil "Set the ~a" from-setf))
      (first (remove-if #'automatic-p (remove nil (mapcar
                          (lambda (m) (documentation m t))
-                         (generic-function-methods (fdefinition name)))))))))
+                         (closer-mop:generic-function-methods (fdefinition name)))))))))
 
 (define-category :function (symbol what)
   (:is (and (function-p symbol)
@@ -139,9 +139,9 @@
 (define-category :slot-accessor (symbol what)
   (:is (and (generic-function-p symbol)
             (some (lambda (m)
-                    (or (eql (class-of m) (find-class 'standard-reader-method))
-                        (eql (class-of m) (find-class 'standard-writer-method))))
-                  (generic-function-methods (fdefinition symbol)))))
+                    (or (eql (class-of m) (find-class 'closer-mop:standard-reader-method))
+                        (eql (class-of m) (find-class 'closer-mop:standard-writer-method))))
+                  (closer-mop:generic-function-methods (fdefinition symbol)))))
   (:docs (gf-docs symbol)))
 
 (defun make-unique-name (thing what)
