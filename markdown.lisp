@@ -12,7 +12,7 @@
 			  :if-does-not-exist :create
 			  :if-exists :supersede)
     (format stream "# ~A~%" (package-name package))
-    (format stream "~%~A~%"
+    (format stream "~%```~%~A~%```~%"
 	    (readme-text (alexandria:make-keyword (package-name package))))
     (loop for category in *categories*
        do
@@ -22,20 +22,27 @@
 	    do
 	      (render-category-element-md category name stream :output-undocumented output-undocumented)))))
 
+(defun md-escape (string)
+  (setf string (ppcre:regex-replace-all "\\*" string "\\*"))
+  (ppcre:regex-replace-all "#" string "\\#"))
+
 (defmethod render-category-element-md :around (category thing stream &key (output-undocumented *output-undocumented*))
   (when (or output-undocumented
 	    (docs-for thing category))
-    (call-next-method)))
+    (let ((*print-pretty* nil)
+	  (*print-case* :downcase))
+      (call-next-method))))
 
-(defmethod render-category-element-md ((category (eql :function)) function stream &key (output-undocumented *output-undocumented*))
+(defmethod render-category-element-md ((category (eql :function)) function stream &key)
   (let ((lambda-list (sb-introspect:function-lambda-list function)))
     (format stream "### ~A ~A~%"
-		 function lambda-list)
+	    (md-escape (princ-to-string function))
+	    (md-escape (princ-to-string lambda-list)))
     (render-function-md function stream)))
 
-(defmethod render-category-element-md (category thing stream &key (output-undocumented *output-undocumented*))
-  (format stream "### ~A~%" thing)
-  (format stream "~A~%" (docs-for thing category)))
+(defmethod render-category-element-md (category thing stream &key)
+  (format stream "### ~A~%" (md-escape (princ-to-string thing)))
+  (format stream "~A~%" (md-escape (docs-for thing category))))
 
 (defun render-function-md (function stream)
   (when (docs-for function :function)
@@ -48,8 +55,10 @@
   (render-docstring-markup-md
    (function-docstring-short-description docstring)
    stream)
+  (terpri stream)
+  (terpri stream)
   (when (function-docstring-args docstring)
-    (format stream "Arguments:")
+    (format stream "Arguments:~%~%")
     (loop for arg in (args-element-args (function-docstring-args docstring))
        do
 	 (format stream "- **~A**: " (arg-element-name arg))

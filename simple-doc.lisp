@@ -42,16 +42,14 @@
 	    (docs-for thing category))
     (call-next-method)))
 
-(defmethod render-category-element ((category (eql :function)) function stream 
-				    &key (output-undocumented *output-undocumented*))
+(defmethod render-category-element ((category (eql :function)) function stream &key)
   (with-html-output (html stream)
     (let ((lambda-list (sb-introspect:function-lambda-list function)))
       (htm (:div :id (make-unique-name function category)
 		 (:h3 (fmt "~A ~A" function lambda-list))
 		 (render-function function stream))))))
 
-(defmethod render-category-element (category thing stream 
-				    &key (output-undocumented *output-undocumented*))
+(defmethod render-category-element (category thing stream &key)
   (with-html-output (html stream)
     (htm (:div :id (make-unique-name thing category)
 	       (:h3 (str thing))
