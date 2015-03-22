@@ -3,7 +3,7 @@
 (defparameter *default-css*
   (asdf:system-relative-pathname :simple-doc "simple-doc.css"))
 
-(defparameter *output-undocumented* nil)
+(defparameter *output-undocumented* nil "If T, undocumented things appear on documentation.")
 
 (defun generate-html-doc (output-filename package 
 			  &key (css *default-css*)
@@ -37,24 +37,25 @@
 		      (render-category-element category name stream 
 					       :output-undocumented output-undocumented)))))))))))
 
+(defmethod render-category-element :around (category thing stream &key (output-undocumented *output-undocumented*))
+  (when (or output-undocumented
+	    (docs-for thing category))
+    (call-next-method)))
+
 (defmethod render-category-element ((category (eql :function)) function stream 
 				    &key (output-undocumented *output-undocumented*))
-  (when (or output-undocumented
-	    (docs-for function category))
-    (with-html-output (html stream)
-      (let ((lambda-list (sb-introspect:function-lambda-list function)))
-	(htm (:div :id (make-unique-name function category)
-		   (:h3 (fmt "~A ~A" function lambda-list))
-		   (render-function function stream)))))))
+  (with-html-output (html stream)
+    (let ((lambda-list (sb-introspect:function-lambda-list function)))
+      (htm (:div :id (make-unique-name function category)
+		 (:h3 (fmt "~A ~A" function lambda-list))
+		 (render-function function stream))))))
 
 (defmethod render-category-element (category thing stream 
 				    &key (output-undocumented *output-undocumented*))
-    (when (or output-undocumented
-	      (docs-for thing category))
-      (with-html-output (html stream)
-	(htm (:div :id (make-unique-name thing category)
-		   (:h3 (str thing))
-		   (:p (str (docs-for thing category))))))))
+  (with-html-output (html stream)
+    (htm (:div :id (make-unique-name thing category)
+	       (:h3 (str thing))
+	       (:p (str (docs-for thing category)))))))
 
 (defun render-function (function stream)
   (with-html-output (html stream)

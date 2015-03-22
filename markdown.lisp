@@ -1,6 +1,12 @@
 (in-package :simple-doc)
 
-(defun generate-markdown-doc (output-filename package)
+(defun generate-markdown-doc (output-filename package &key (output-undocumented *output-undocumented*))
+    "Generates Markdown doc for a package
+
+   Args: - output-filename: A pathname or string. The documentation is written to that file.
+         - package (package): The package for which to generate the documentation
+         - output-undocumented (boolean): If T, enums undocumented things in generated doc."
+
   (with-open-file (stream output-filename
 			  :direction :output
 			  :if-does-not-exist :create
@@ -14,15 +20,20 @@
 		 (pluralization (string-capitalize (symbol-name category))))
 	 (loop for name in (names package category)
 	    do
-	      (render-category-element-md category name stream)))))
+	      (render-category-element-md category name stream :output-undocumented output-undocumented)))))
 
-(defmethod render-category-element-md ((category (eql :function)) function stream)
+(defmethod render-category-element-md :around (category thing stream &key (output-undocumented *output-undocumented*))
+  (when (or output-undocumented
+	    (docs-for thing category))
+    (call-next-method)))
+
+(defmethod render-category-element-md ((category (eql :function)) function stream &key (output-undocumented *output-undocumented*))
   (let ((lambda-list (sb-introspect:function-lambda-list function)))
     (format stream "### ~A ~A~%"
 		 function lambda-list)
     (render-function-md function stream)))
 
-(defmethod render-category-element-md (category thing stream)
+(defmethod render-category-element-md (category thing stream &key (output-undocumented *output-undocumented*))
   (format stream "### ~A~%" thing)
   (format stream "~A~%" (docs-for thing category)))
 
