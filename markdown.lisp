@@ -1,6 +1,8 @@
 (in-package :simple-doc)
 
-(defun generate-markdown-doc (output-filename package &key (output-undocumented *output-undocumented*))
+(defun generate-markdown-doc (output-filename package &key 
+							(output-undocumented *output-undocumented*)
+							(use-readme *use-readme*))
   "Generates Markdown doc for a package
 
    Args: - output-filename: A pathname or string. The documentation is written to that file.
@@ -13,9 +15,12 @@
 			    :if-exists :supersede)
       (let ((*print-pretty* nil)
 	    (*print-case* :downcase))
-	(format stream "# ~A~%" (package-name package))
-	(format stream "~%~A~%~%"
-		(documentation package t))
+	(format stream "# ~A~%~%" (package-name package))
+	(if use-readme
+	       (format stream "```~%~A~%```~%~%"
+		     (readme-text (alexandria:make-keyword (package-name package))))
+	       (format stream "~A~%~%"
+		       (documentation package t)))
 	(loop for category in *categories*
 	   do
 	     (format stream "## ~A~%"
@@ -115,10 +120,10 @@
   (format stream "*~A*" (italic-element-text markup)))
 
 (defmethod render-docstring-markup-md ((markup ref-element) stream)
-  (write-string stream (ref-element-name markup)))
+  (write-string (ref-element-name markup) stream))
 
 (defmethod render-docstring-markup-md ((markup email-element) stream)
-  (write-string stream (email-element-email markup)))
+  (write-string (email-element-email markup) stream))
 
 (defmethod render-docstring-markup-md ((markup link-element) stream)
   (format stream "[~A](~A)"
