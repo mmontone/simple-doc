@@ -11,16 +11,18 @@
 			  :direction :output
 			  :if-does-not-exist :create
 			  :if-exists :supersede)
-    (format stream "# ~A~%" (package-name package))
-    (format stream "~%~A~%~%"
-	    (documentation package t))
-    (loop for category in *categories*
-       do
-	 (format stream "## ~A~%"
-		 (pluralization (string-capitalize (symbol-name category))))
-	 (loop for name in (names package category)
-	    do
-	      (render-category-element-md category name stream :output-undocumented output-undocumented)))))
+    (let ((*print-pretty* nil)
+	  (*print-case* :downcase))
+      (format stream "# ~A~%" (package-name package))
+      (format stream "~%~A~%~%"
+	      (documentation package t))
+      (loop for category in *categories*
+	 do
+	   (format stream "## ~A~%"
+		   (pluralization (string-capitalize (symbol-name category))))
+	   (loop for name in (names package category)
+	      do
+		(render-category-element-md category name stream :output-undocumented output-undocumented))))))
 
 (defun md-escape (string)
   (setf string (ppcre:regex-replace-all "\\*" string "\\*"))
@@ -29,9 +31,7 @@
 (defmethod render-category-element-md :around (category thing stream &key (output-undocumented *output-undocumented*))
   (when (or output-undocumented
 	    (docs-for thing category))
-    (let ((*print-pretty* nil)
-	  (*print-case* :downcase))
-      (call-next-method))))
+      (call-next-method)))
 
 (defmethod render-category-element-md ((category (eql :function)) function stream &key)
   (let ((lambda-list (sb-introspect:function-lambda-list function)))

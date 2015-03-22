@@ -5,19 +5,26 @@
 
 (defparameter *output-undocumented* nil "If T, undocumented things appear on documentation.")
 
+(defparameter *use-readme* nil "If T, reads the readme file and appends it to docs")
+
 (defun generate-html-doc (output-filename package 
 			  &key (css *default-css*)
-			    (output-undocumented *output-undocumented*))
+			    (output-undocumented *output-undocumented*)
+			    (use-readme *use-readme*))
   "Generates HTML doc for a package
 
    Args: - output-filename: A pathname or string. The documentation is written to that file.
          - package (package): The package for which to generate the documentation
-         - css: The css stylesheet."
+         - css: The css stylesheet.
+         - output-undocumented: If T, undocumented things appear on documentation.
+         - use-readme: If T, reads the readme file and appends it to docs"
   (with-open-file (stream output-filename
 			  :direction :output
 			  :if-does-not-exist :create
 			  :if-exists :supersede)
-    (let ((css-string (read-file-to-string css)))
+    (let ((css-string (read-file-to-string css))
+	  (*print-pretty* nil)
+	  (*print-case* :downcase))
       (with-html-output (html stream)
 	(htm
 	 (:html
@@ -26,8 +33,10 @@
 	   (:style (str css-string)))
 	  (:body
 	   (:h1 (str (package-name package)))
-	   (:pre
-	    (str (readme-text (alexandria:make-keyword (package-name package)))))
+	   (if use-readme
+	       (htm (:pre
+		     (str (readme-text (alexandria:make-keyword (package-name package))))))
+	       (htm (:p (str (documentation package t)))))
 	   (loop for category in *categories*
 	      do
 		(htm
