@@ -1,33 +1,32 @@
 (in-package :simple-doc)
 
 (defun generate-markdown-doc (output-filename package &key (output-undocumented *output-undocumented*))
-    "Generates Markdown doc for a package
+  "Generates Markdown doc for a package
 
    Args: - output-filename: A pathname or string. The documentation is written to that file.
          - package (package): The package for which to generate the documentation
          - output-undocumented (boolean): If T, enums undocumented things in generated doc."
-
-  (with-open-file (stream output-filename
-			  :direction :output
-			  :if-does-not-exist :create
-			  :if-exists :supersede)
-    (let ((*print-pretty* nil)
-	  (*print-case* :downcase))
-      (format stream "# ~A~%" (package-name package))
-      (format stream "~%~A~%~%"
-	      (documentation package t))
-      (loop for category in *categories*
-	 do
-	   (format stream "## ~A~%"
-		   (pluralization (string-capitalize (symbol-name category))))
-	   (loop for name in (names package category)
-	      do
-		(render-category-element-md category name stream :output-undocumented output-undocumented))))))
+  (let ((*package* package))
+    (with-open-file (stream output-filename
+			    :direction :output
+			    :if-does-not-exist :create
+			    :if-exists :supersede)
+      (let ((*print-pretty* nil)
+	    (*print-case* :downcase))
+	(format stream "# ~A~%" (package-name package))
+	(format stream "~%~A~%~%"
+		(documentation package t))
+	(loop for category in *categories*
+	   do
+	     (format stream "## ~A~%"
+		     (pluralization (string-capitalize (symbol-name category))))
+	     (loop for name in (names package category)
+		do
+		  (render-category-element-md category name stream :output-undocumented output-undocumented)))))))
 
 (defun md-escape (string)
   (setf string (ppcre:regex-replace-all "\\*" string "\\*"))
   (setf string (ppcre:regex-replace-all "#" string "\\#"))
-  (setf string (ppcre:regex-replace-all "\"" string "\\\""))
   string)
 
 (defmethod render-category-element-md :around (category thing stream &key (output-undocumented *output-undocumented*))
@@ -39,7 +38,7 @@
   (let ((lambda-list (sb-introspect:function-lambda-list function)))
     (format stream "### ~A ~A~%"
 	    (md-escape (princ-to-string function))
-	    (md-escape (princ-to-string lambda-list)))
+	    (md-escape (prin1-to-string lambda-list)))
     (render-function-md function stream)
     (terpri stream)
     (terpri stream)))
