@@ -126,6 +126,16 @@
        do
        (render-docstring-markup elem stream)))
 
+(defmethod render-docstring-markup ((markup list-element) stream)
+  (with-html-output (html stream)
+    (:ul
+     (loop for item in (list-element-items markup)
+	do (render-docstring-markup item stream)))))
+
+(defmethod render-docstring-markup ((markup list-item-element) stream)
+  (with-html-output (html stream)
+    (:li (str (list-item-element-text markup)))))
+
 (defmethod render-docstring-markup ((markup code-element) stream)
   (with-html-output (html stream)
     (:code (str (code-element-text markup)))))

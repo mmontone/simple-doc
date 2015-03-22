@@ -26,7 +26,9 @@
 
 (defun md-escape (string)
   (setf string (ppcre:regex-replace-all "\\*" string "\\*"))
-  (ppcre:regex-replace-all "#" string "\\#"))
+  (setf string (ppcre:regex-replace-all "#" string "\\#"))
+  (setf string (ppcre:regex-replace-all "\"" string "\\\""))
+  string)
 
 (defmethod render-category-element-md :around (category thing stream &key (output-undocumented *output-undocumented*))
   (when (or output-undocumented
@@ -38,11 +40,13 @@
     (format stream "### ~A ~A~%"
 	    (md-escape (princ-to-string function))
 	    (md-escape (princ-to-string lambda-list)))
-    (render-function-md function stream)))
+    (render-function-md function stream)
+    (terpri stream)
+    (terpri stream)))
 
 (defmethod render-category-element-md (category thing stream &key)
   (format stream "### ~A~%" (md-escape (princ-to-string thing)))
-  (format stream "~A~%" (md-escape (docs-for thing category))))
+  (format stream "~A~%~%" (md-escape (docs-for thing category))))
 
 (defun render-function-md (function stream)
   (when (docs-for function :function)
@@ -83,7 +87,8 @@
   (when (function-docstring-metadata docstring)
     (loop for metadata in (docstring-metadata-metadata
 			   (function-docstring-metadata docstring))
-       do (render-docstring-metadata-md metadata stream))))
+       do (render-docstring-metadata-md metadata stream)
+	 (terpri stream))))
 
 (defmethod render-docstring-markup-md ((markup string) stream)
   (write-string markup stream))
@@ -94,7 +99,15 @@
        (render-docstring-markup-md elem stream)))
 
 (defmethod render-docstring-markup-md ((markup code-element) stream)
-  (format stream "```~%~A~%```" (code-element-text markup)))
+  (format stream "```~%~A~%```~%" (code-element-text markup)))
+
+(defmethod render-docstring-markup-md ((markup list-element) stream)
+  (loop for item in (list-element-items markup)
+     do (render-docstring-markup-md item stream)
+       (terpri stream)))
+
+(defmethod render-docstring-markup-md ((markup list-item-element) stream)
+  (format stream "* ~A" (list-item-element-text markup)))
 
 (defmethod render-docstring-markup-md ((markup bold-element) stream)
   (format stream "**~A**" (bold-element-text markup)))
