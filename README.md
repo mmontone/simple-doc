@@ -1,12 +1,7 @@
 # SIMPLE-DOC
 
-```
-simple-doc
-==========
-
 Simple documentation generator for Common Lisp
 
-```
 ## Functions
 ### generate-html-doc (output-filename package &key (css \*default-css\*) (output-undocumented \*output-undocumented\*))
 Generates HTML doc for a package
