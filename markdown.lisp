@@ -12,8 +12,8 @@
 			  :if-does-not-exist :create
 			  :if-exists :supersede)
     (format stream "# ~A~%" (package-name package))
-    (format stream "~%```~%~A~%```~%"
-	    (readme-text (alexandria:make-keyword (package-name package))))
+    (format stream "~%~A~%~%"
+	    (documentation package t))
     (loop for category in *categories*
        do
 	 (format stream "## ~A~%"
@@ -58,7 +58,6 @@
   (terpri stream)
   (terpri stream)
   (when (function-docstring-args docstring)
-    (format stream "Arguments:~%~%")
     (loop for arg in (args-element-args (function-docstring-args docstring))
        do
 	 (format stream "- **~A**: " (arg-element-name arg))
