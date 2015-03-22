@@ -3,7 +3,16 @@
 (defparameter *default-css*
   (asdf:system-relative-pathname :simple-doc "simple-doc.css"))
 
-(defun generate-html-doc (output-filename package &key (css *default-css*))
+(defparameter *output-undocumented* nil)
+
+(defun generate-html-doc (output-filename package 
+			  &key (css *default-css*)
+			    (output-undocumented *output-undocumented*))
+  "Generates HTML doc for a package
+
+   Args: - output-filename: A pathname or string. The documentation is written to that file.
+         - package (package): The package for which to generate the documentation
+         - css: The css stylesheet."
   (with-open-file (stream output-filename
 			  :direction :output
 			  :if-does-not-exist :create
@@ -25,20 +34,27 @@
 		 (:h2 (str (pluralization (string-capitalize (symbol-name category)))))
 		 (loop for name in (names package category)
 		    do
-		      (render-category-element category name stream)))))))))))
+		      (render-category-element category name stream 
+					       :output-undocumented output-undocumented)))))))))))
 
-(defmethod render-category-element ((category (eql :function)) function stream)
-  (with-html-output (html stream)
-    (let ((lambda-list (sb-introspect:function-lambda-list function)))
-      (htm (:div :id (make-unique-name function category)
-		 (:h3 (fmt "~A ~A" function lambda-list))
-		 (render-function function stream))))))
+(defmethod render-category-element ((category (eql :function)) function stream 
+				    &key (output-undocumented *output-undocumented*))
+  (when (or output-undocumented
+	    (docs-for function category))
+    (with-html-output (html stream)
+      (let ((lambda-list (sb-introspect:function-lambda-list function)))
+	(htm (:div :id (make-unique-name function category)
+		   (:h3 (fmt "~A ~A" function lambda-list))
+		   (render-function function stream)))))))
 
-(defmethod render-category-element (category thing stream)
-  (with-html-output (html stream)
-    (htm (:div :id (make-unique-name thing category)
-	       (:h3 (str thing))
-	       (:p (str (docs-for thing category)))))))
+(defmethod render-category-element (category thing stream 
+				    &key (output-undocumented *output-undocumented*))
+    (when (or output-undocumented
+	      (docs-for thing category))
+      (with-html-output (html stream)
+	(htm (:div :id (make-unique-name thing category)
+		   (:h3 (str thing))
+		   (:p (str (docs-for thing category))))))))
 
 (defun render-function (function stream)
   (with-html-output (html stream)
