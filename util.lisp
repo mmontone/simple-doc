@@ -35,12 +35,22 @@
      when names nconc
        (loop for sym in names unless (docs-for sym what) collect (list sym what))))
 
-(defun names (package what)
-  (sort
-   (loop for sym being the present-symbols of package
-      when (is sym what) collect sym
-      when (is `(setf ,sym) what) collect `(setf ,sym))
-   #'name<))
+(defun names (package what &optional (kind-of-symbols :accessible))
+  (let ((symbols
+	 (ecase kind-of-symbols
+	   (:accessible
+	    (loop for sym being the symbols of package
+	       when (is sym what) collect sym
+	       when (is `(setf ,sym) what) collect `(setf ,sym)))
+	   (:present
+	    (loop for sym being the present-symbols of package
+	       when (is sym what) collect sym
+	       when (is `(setf ,sym) what) collect `(setf ,sym)))
+	   (:external 
+	    (loop for sym being the external-symbols of package
+	       when (is sym what) collect sym
+	       when (is `(setf ,sym) what) collect `(setf ,sym))))))
+    (sort symbols #'name<)))
 
 (defun name< (n1 n2)
   (cond

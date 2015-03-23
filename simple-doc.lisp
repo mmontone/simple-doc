@@ -10,14 +10,16 @@
 (defun generate-html-doc (output-filename package 
 			  &key (css *default-css*)
 			    (output-undocumented *output-undocumented*)
-			    (use-readme *use-readme*))
+			    (use-readme *use-readme*)
+			    (kind-of-symbols :external))
   "Generates HTML doc for a package
 
    Args: - output-filename: A pathname or string. The documentation is written to that file.
          - package (package): The package for which to generate the documentation
          - css: The css stylesheet.
          - output-undocumented: If T, undocumented things appear on documentation.
-         - use-readme: If T, reads the readme file and appends it to docs"
+         - use-readme: If T, reads the readme file and appends it to docs
+         - kind-of-symbols: The symbols to appear in the docs. One of :external, :present or :accessible"
   (with-open-file (stream output-filename
 			  :direction :output
 			  :if-does-not-exist :create
@@ -41,7 +43,7 @@
 	      do
 		(htm
 		 (:h2 (str (pluralization (string-capitalize (symbol-name category)))))
-		 (loop for name in (names package category)
+		 (loop for name in (names package category kind-of-symbols)
 		    do
 		      (render-category-element category name stream 
 					       :output-undocumented output-undocumented)))))))))))

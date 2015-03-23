@@ -2,12 +2,14 @@
 
 (defun generate-markdown-doc (output-filename package &key 
 							(output-undocumented *output-undocumented*)
-							(use-readme *use-readme*))
+							(use-readme *use-readme*)
+							(kind-of-symbols :external))
   "Generates Markdown doc for a package
 
    Args: - output-filename: A pathname or string. The documentation is written to that file.
          - package (package): The package for which to generate the documentation
-         - output-undocumented (boolean): If T, enums undocumented things in generated doc."
+         - output-undocumented (boolean): If T, enums undocumented things in generated doc.
+         - kind-of-symbols: Kind of symbols to appear in the doc. One of :external, :present or :accessible"
   (let ((*package* package))
     (with-open-file (stream output-filename
 			    :direction :output
@@ -25,9 +27,10 @@
 	   do
 	     (format stream "## ~A~%"
 		     (pluralization (string-capitalize (symbol-name category))))
-	     (loop for name in (names package category)
+	     (loop for name in (names package category kind-of-symbols)
 		do
-		  (render-category-element-md category name stream :output-undocumented output-undocumented)))))))
+		  (render-category-element-md category name stream 
+					      :output-undocumented output-undocumented)))))))
 
 (defun md-escape (string)
   (setf string (ppcre:regex-replace-all "\\*" string "\\*"))
