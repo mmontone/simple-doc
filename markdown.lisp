@@ -13,7 +13,7 @@
 			    :direction :output
 			    :if-does-not-exist :create
 			    :if-exists :supersede)
-      (let ((*print-pretty* nil)
+      (let ((*print-pretty* t)
 	    (*print-case* :downcase))
 	(format stream "# ~A~%~%" (package-name package))
 	(if use-readme
@@ -41,9 +41,10 @@
 
 (defmethod render-category-element-md ((category (eql :function)) function stream &key)
   (let ((lambda-list (sb-introspect:function-lambda-list function)))
-    (format stream "### ~A ~A~%"
-	    (md-escape (princ-to-string function))
-	    (md-escape (prin1-to-string lambda-list)))
+    (format stream "### ~A~%~%"
+	    (md-escape (princ-to-string function)))
+    (format stream "```lisp~%~A~%```~%~%"
+	    (prin1-to-string lambda-list))
     (render-function-md function stream)
     (terpri stream)
     (terpri stream)))
@@ -103,7 +104,7 @@
        (render-docstring-markup-md elem stream)))
 
 (defmethod render-docstring-markup-md ((markup code-element) stream)
-  (format stream "```~%~A~%```~%" (code-element-text markup)))
+  (format stream "```lisp~%~A~%```~%" (code-element-text markup)))
 
 (defmethod render-docstring-markup-md ((markup list-element) stream)
   (loop for item in (list-element-items markup)
