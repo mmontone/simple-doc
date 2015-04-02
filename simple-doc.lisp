@@ -60,6 +60,13 @@
 		 (:h3 (fmt "~A ~A" function lambda-list))
 		 (render-function function stream))))))
 
+(defmethod render-category-element ((category (eql :macro)) macro stream &key)
+  (with-html-output (html stream)
+    (let ((lambda-list (sb-introspect:function-lambda-list macro)))
+      (htm (:div :id (make-unique-name macro category)
+		 (:h3 (fmt "~A ~A" macro lambda-list))
+		 (render-function macro stream))))))
+
 (defmethod render-category-element (category thing stream &key)
   (with-html-output (html stream)
     (htm (:div :id (make-unique-name thing category)

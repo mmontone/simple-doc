@@ -52,6 +52,16 @@
     (terpri stream)
     (terpri stream)))
 
+(defmethod render-category-element-md ((category (eql :macro)) macro stream &key)
+  (let ((lambda-list (sb-introspect:function-lambda-list macro)))
+    (format stream "### ~A~%~%"
+	    (md-escape (princ-to-string macro)))
+    (format stream "```lisp~%~A~%```~%~%"
+	    (prin1-to-string lambda-list))
+    (render-function-md macro stream)
+    (terpri stream)
+    (terpri stream)))
+
 (defmethod render-category-element-md (category thing stream &key)
   (format stream "### ~A~%" (md-escape (princ-to-string thing)))
   (format stream "~A~%~%" (md-escape (docs-for thing category))))
