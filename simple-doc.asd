@@ -14,4 +14,5 @@
 	       (:file "util")
                (:file "simple-doc")
 	       (:file "markdown")
-	       (:file "html-bootstrap")))
+	       (:file "html-bootstrap"))
+  :serial t)

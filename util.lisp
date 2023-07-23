@@ -1,5 +1,37 @@
 (in-package :simple-doc)
 
+(defun call-with-output-to-destination (destination function &rest args)
+  "Evaluate FUNCTION with a stream created from DESTINATION as argument.
+If DESTINATION is a pathname, then it is opened for writing.
+If it is a string, then it is interpreted as a PATHNAME.
+If it is a stream, then it is used as it is.
+If it is NIL, then WITH-OUTPUT-TO-STRING is used to create the stream.
+If it is T, then *STANDARD-OUTPUT* is used for the stream.
+ARGS are used for OPEN-FILE calls."
+  (etypecase destination
+    ((or pathname string)
+     (let ((stream (apply #'open destination :direction :output args)))
+       (unwind-protect
+            (funcall function stream)
+         (close stream))))
+    (stream
+     (funcall function destination))
+    (null
+     (with-output-to-string (stream)
+       (funcall function stream)))
+    (t
+     (funcall function *standard-output*))))       
+    
+(defmacro with-output-to-destination ((var destination &rest args) &body body)
+  "Evaluate BODY with VAR bound to a stream created from DESTINATION.
+If DESTINATION is a pathname, then it is opened for writing.
+If it is a string, then it is interpreted as a PATHNAME.
+If it is a stream, then it is used as it is.
+If it is NIL, then WITH-OUTPUT-TO-STRING is used to create the stream.
+If it is T, then *STANDARD-OUTPUT* is used for the stream.
+ARGS are used for OPEN-FILE calls."
+  `(call-with-output-to-destination ,destination (lambda (,var) ,@body) ,@args))
+
 (defun read-file-to-string (file)
   (with-open-file (stream file)
     (let ((seq (make-string (file-length stream))))
