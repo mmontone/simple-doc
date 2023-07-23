@@ -3,7 +3,9 @@
 (defun generate-markdown-doc (destination package &key
                                                     (output-undocumented *output-undocumented*)
                                                     (use-readme *use-readme*)
-                                                    (kind-of-symbols :external))
+                                                    (kind-of-symbols :external)
+                                                    (include '(:package :package-documentation))
+                                                    (categories *categories*))
   "Generates Markdown doc for a package
 
    Args: - destination: (or pathname string stream nil t). The documentation is written a stream created from the type of DESTINATION. See WITH-DESTINATION-STREAM.
@@ -12,17 +14,19 @@
          - kind-of-symbols: Kind of symbols to appear in the doc. One of :external, :present or :accessible"
   (let ((*package* (find-package package)))
     (with-output-to-destination (stream destination
-                                     :if-does-not-exist :create
-                                     :if-exists :supersede)
+                                        :if-does-not-exist :create
+                                        :if-exists :supersede)
       (let ((*print-pretty* t)
             (*print-case* :downcase))
-        (format stream "# ~A~%~%" (package-name package))
-        (if use-readme
-            (format stream "```~%~A~%```~%~%"
-                    (readme-text (alexandria:make-keyword (package-name package))))
-            (format stream "~A~%~%"
-                    (documentation package t)))
-        (loop for category in *categories*
+        (when (member :package include)
+          (format stream "# ~A~%~%" (package-name package))
+          (if use-readme
+              (format stream "```~%~A~%```~%~%"
+                      (readme-text (alexandria:make-keyword (package-name package))))
+              (when (member :package-documentation include)
+                (format stream "~A~%~%"
+                        (documentation package t)))))
+        (loop for category in categories
               do
                  (let ((names (names package category kind-of-symbols)))
                    (when names
