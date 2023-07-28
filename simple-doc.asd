@@ -9,7 +9,8 @@
                #:cl-who
                #:docstring-parser
 	       #:trivial-shell
-	       #:closer-mop)
+	       #:closer-mop
+               (:require #:sb-introspect))
   :components ((:file "package")
 	       (:file "util")
                (:file "simple-doc")
