@@ -23,7 +23,8 @@
           (if use-readme
               (format stream "```~%~A~%```~%~%"
                       (readme-text (alexandria:make-keyword (package-name package))))
-              (when (member :package-documentation include)
+              (when (and (member :package-documentation include)
+                         (documentation package t))
                 (format stream "~A~%~%"
                         (documentation package t)))))
         (loop for category in categories
