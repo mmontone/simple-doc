@@ -81,7 +81,8 @@
 
 (defmethod render-category-element-md (category thing stream &key)
   (format stream "### ~A~%" (md-escape (princ-to-string thing)))
-  (format stream "~A~%~%" (md-escape (docs-for thing category))))
+  (when (docs-for thing category)
+    (format stream "~A~%~%" (md-escape (docs-for thing category)))))
 
 (defun render-function-md (function stream)
   (when (docs-for function :function)
