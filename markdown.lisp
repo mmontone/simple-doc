@@ -32,7 +32,7 @@
                  (let ((names (names package category kind-of-symbols)))
                    (when names
                      (format stream "## ~A~%"
-                             (pluralization (string-capitalize (symbol-name category))))
+                             (string-capitalize (pluralization category)))
                      (loop for name in names
                            do
                               (render-category-element-md category name stream
@@ -53,7 +53,8 @@
     (format stream "### ~A~%~%"
             (md-escape (princ-to-string function)))
     (format stream "```lisp~%~A~%```~%~%"
-            (prin1-to-string lambda-list))
+            (if lambda-list (prin1-to-string lambda-list)
+                "()"))
     (render-function-md function stream)
     (terpri stream)))
 
@@ -62,7 +63,8 @@
     (format stream "### ~A~%~%"
             (md-escape (princ-to-string macro)))
     (format stream "```lisp~%~A~%```~%~%"
-            (prin1-to-string lambda-list))
+            (if lambda-list (prin1-to-string lambda-list)
+                "()"))
     (render-function-md macro stream)
     (terpri stream)
     (terpri stream)))
