@@ -58,6 +58,16 @@
     (render-function-md function stream)
     (terpri stream)))
 
+(defmethod render-category-element-md ((category (eql :generic-function)) function stream &key)
+  (let ((lambda-list (sb-introspect:function-lambda-list function)))
+    (format stream "### ~A~%~%"
+            (md-escape (princ-to-string function)))
+    (format stream "```lisp~%~A~%```~%~%"
+            (if lambda-list (prin1-to-string lambda-list)
+                "()"))
+    (render-function-md function stream)
+    (terpri stream)))
+
 (defmethod render-category-element-md ((category (eql :macro)) macro stream &key)
   (let ((lambda-list (sb-introspect:function-lambda-list macro)))
     (format stream "### ~A~%~%"
