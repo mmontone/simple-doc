@@ -8,11 +8,15 @@
                                                     (categories *categories*))
   "Generates Markdown doc for a package
 
-   Args: - destination: (or pathname string stream nil t). The documentation is written a stream created from the type of DESTINATION. See WITH-DESTINATION-STREAM.
-         - package (package): The package for which to generate the documentation
-         - output-undocumented (boolean): If T, enums undocumented things in generated doc.
-         - kind-of-symbols: Kind of symbols to appear in the doc. One of :external, :present or :accessible"
-  (let ((*package* (find-package package)))
+   Args: - DESTINATION (OR PATHNAME STRING STREAM NIL T): The documentation is written a stream created from the type of DESTINATION. See WITH-DESTINATION-STREAM.
+         - PACKAGE (PACKAGE-DESIGNATOR): The package for which to generate the documentation
+         - OUTPUT-UNDOCUMENTED (BOOLEAN): If T, enums undocumented things in generated doc.
+         - KIND-OF-SYMBOLS: Kind of symbols to appear in the doc. One of :EXTERNAL, :PRESENT or :ACCESSIBLE.
+         - CATEGORIES: The list of definition categories that should appear in the docs. Default is *CATEGORIES*, that includes all definition categories: (:FUNCTION :MACRO :GENERIC-FUNCTION :SLOT-ACCESSOR :VARIABLE :CLASS :CONDITION
+ :CONSTANT)
+         - INCLUDE: Controls what gets included in the output. Default is '(:PACKAGE :PACKAGE-DOCUMENTATION). If :PACKAGE appears in the INCLUDE list, the document will start with the PACKAGE name. If :PACKAGE-DOCUMENTATION appears in the INCLUDE list, then the PACKAGE docstring is added to the document."
+  (let ((*package* (find-package package))
+        (package (find-package package)))
     (with-output-to-destination (stream destination
                                         :if-does-not-exist :create
                                         :if-exists :supersede)
