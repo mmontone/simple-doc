@@ -41,10 +41,12 @@
                      (str (readme-text (alexandria:make-keyword (package-name package))))))
                (htm (:p (str (documentation package t)))))
            (loop for category in *categories*
+                 for names := (names package category kind-of-symbols)
+                 when names
                  do
                     (htm
                      (:h2 (str (pluralization (string-capitalize (symbol-name category)))))
-                     (loop for name in (names package category kind-of-symbols)
+                     (loop for name in names
                            do
                               (render-category-element category name stream
                                                        :output-undocumented output-undocumented)))))))))))
