@@ -8,9 +8,9 @@
                                                     (categories *categories*))
   "Generates Markdown doc for a package
 
-   Args: - DESTINATION (OR PATHNAME STRING STREAM NIL T): The documentation is written a stream created from the type of DESTINATION. See WITH-DESTINATION-STREAM.
-         - PACKAGE (PACKAGE-DESIGNATOR): The package for which to generate the documentation
-         - OUTPUT-UNDOCUMENTED (BOOLEAN): If T, enums undocumented things in generated doc.
+   Args: - DESTINATION: (OR PATHNAME STRING STREAM NIL T) The documentation is written a stream created from the type of DESTINATION. See WITH-DESTINATION-STREAM.
+         - PACKAGE: (PACKAGE-DESIGNATOR) The package for which to generate the documentation
+         - OUTPUT-UNDOCUMENTED: (BOOLEAN) If T, enums undocumented things in generated doc.
          - KIND-OF-SYMBOLS: Kind of symbols to appear in the doc. One of :EXTERNAL, :PRESENT or :ACCESSIBLE.
          - CATEGORIES: The list of definition categories that should appear in the docs. Default is *CATEGORIES*, that includes all definition categories: (:FUNCTION :MACRO :GENERIC-FUNCTION :SLOT-ACCESSOR :VARIABLE :CLASS :CONDITION
  :CONSTANT)
