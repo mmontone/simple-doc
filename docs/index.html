@@ -1,0 +1,62 @@
+<html><head><title>Simple doc for #<package "SIMPLE-DOC"></title><style>body {
+  font: 12px/1.5 'PT Sans', serif;
+  margin: 25px;
+}
+
+.tags {
+  list-style: none;
+  margin: 0;
+  overflow: hidden; 
+  padding: 0;
+}
+
+.tags li {
+  float: left; 
+}
+
+.tag {
+  background: #eee;
+  border-radius: 3px 0 0 3px;
+  color: #999;
+  display: inline-block;
+  height: 26px;
+  line-height: 26px;
+  padding: 0 20px 0 23px;
+  position: relative;
+  margin: 0 10px 10px 0;
+  text-decoration: none;
+  -webkit-transition: color 0.2s;
+}
+
+.tag::before {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: inset 0 1px rgba(0, 0, 0, 0.25);
+  content: '';
+  height: 6px;
+  left: 10px;
+  position: absolute;
+  width: 6px;
+  top: 10px;
+}
+
+.tag::after {
+  background: #fff;
+  border-bottom: 13px solid transparent;
+  border-left: 10px solid #eee;
+  border-top: 13px solid transparent;
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.tag:hover {
+  background-color: crimson;
+  color: white;
+}
+
+.tag:hover::after {
+   border-left-color: crimson; 
+}</style></head><body><h1>SIMPLE-DOC</h1><p>Simple documentation generator for Common Lisp</p><h2>Functions</h2><div id='generate-html-doc-function'><h3>generate-html-doc (destination package &key (css *default-css*) (output-undocumented *output-undocumented*) (use-readme *use-readme*) (kind-of-symbols external))</h3><div class='function'><div class='short-description'>Generates HTML doc for a package</div><div class='arguments'><p><b>Arguments:</b></p><ul><li><b>destination</b>: A destination specifier. See WITH-OUTPUT-TO-DESTINATION.</li><li><b>package</b>: <i>(package) </i>The package for which to generate the documentation</li><li><b>css</b>: The css stylesheet.</li><li><b>output-undocumented</b>: If T, undocumented things appear on documentation.</li><li><b>use-readme</b>: If T, reads the readme file and appends it to docs</li><li><b>kind-of-symbols</b>: The symbols to appear in the docs. One of :external, :present or :accessible</li></ul></div></div></div><div id='generate-markdown-doc-function'><h3>generate-markdown-doc (destination package &key (output-undocumented *output-undocumented*) (use-readme *use-readme*) (kind-of-symbols external) (include (quote (package package-documentation))) (categories *categories*))</h3><div class='function'><div class='short-description'>Generates Markdown doc for a package</div><div class='arguments'><p><b>Arguments:</b></p><ul><li><b>DESTINATION</b>: (OR PATHNAME STRING STREAM NIL T) The documentation is written a stream created from the type of DESTINATION. See WITH-DESTINATION-STREAM.</li><li><b>PACKAGE</b>: (PACKAGE-DESIGNATOR) The package for which to generate the documentation</li><li><b>OUTPUT-UNDOCUMENTED</b>: (BOOLEAN) If T, enums undocumented things in generated doc.</li><li><b>KIND-OF-SYMBOLS</b>: Kind of symbols to appear in the doc. One of :EXTERNAL, :PRESENT or :ACCESSIBLE.</li><li><b>CATEGORIES</b>: The list of definition categories that should appear in the docs. Default is *CATEGORIES*, that includes all definition categories: (:FUNCTION :MACRO :GENERIC-FUNCTION :SLOT-ACCESSOR :VARIABLE :CLASS :CONDITION
+:CONSTANT)</li><li><b>INCLUDE</b>: Controls what gets included in the output. Default is '(:PACKAGE :PACKAGE-DOCUMENTATION). If :PACKAGE appears in the INCLUDE list, the document will start with the PACKAGE name. If :PACKAGE-DOCUMENTATION appears in the INCLUDE list, then the PACKAGE docstring is added to the document.</li></ul></div></div></div><h2>Macros</h2><h2>Generic-Functions</h2><h2>Slot-Accessors</h2><h2>Variables</h2><h2>Classs</h2><h2>Conditions</h2><h2>Constants</h2></body></html>

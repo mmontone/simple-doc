@@ -26,7 +26,8 @@
                                       :if-exists :supersede)
     (let ((css-string (read-file-to-string css))
           (*print-pretty* nil)
-          (*print-case* :downcase))
+          (*print-case* :downcase)
+          (package (find-package package)))
       (with-html-output (html stream)
         (htm
          (:html
